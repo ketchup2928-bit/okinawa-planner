@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Okinawa 2025</title>
+    <title>Okinawa 2025 | 沖繩跨年之旅</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F4EBE2; margin: 0; padding: 0; }
-        [v-cloak] { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F4EBE2; color: #4A4A4A; overflow-x: hidden; }
         .content-up { margin-top: -60px; border-radius: 40px 40px 0 0; background-color: #F4EBE2; position: relative; z-index: 20; min-height: 100vh; padding-bottom: 120px; }
-        .glass-nav { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.2); }
-        .edit-input { background: transparent; border: none; font-weight: 700; width: 100%; outline: none; padding: 0; }
-        ::-webkit-scrollbar { display: none; }
+        .date-item.active { background-color: #0D9488; color: white; transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.3); }
+        .glass-nav { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(12px); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .flight-card { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white; border-radius: 2rem; padding: 1.5rem; }
+        .edit-input { background: transparent; border: none; font-weight: 700; outline: none; width: 100%; padding: 2px 0; }
+        .edit-input:focus { border-bottom: 1px solid #0D9488; }
+        [v-cloak] { display: none; }
     </style>
 </head>
-<body class="max-w-md mx-auto">
+<body class="max-w-md mx-auto shadow-2xl">
 
 <div id="app" v-cloak>
     <header class="relative w-full h-[250px] overflow-hidden">
@@ -33,156 +35,20 @@
     </header>
 
     <div class="content-up p-5">
+        
         <div v-if="currentTab === 'schedule'">
-            <div @click="openWeatherApp" class="flex items-center justify-between bg-white/80 p-5 rounded-[30px] mb-6 shadow-sm border border-white cursor-pointer">
-                <div class="flex items-center gap-4">
+            <div @click="openWeatherApp" class="flex items-center justify-between bg-white/60 p-4 rounded-3xl mb-6 border border-white cursor-pointer active:scale-95 transition-transform">
+                <div class="flex items-center gap-3">
                     <i data-lucide="cloud-sun" class="text-teal-500 w-10 h-10"></i>
                     <div>
                         <div class="text-2xl font-black text-teal-800">19°C</div>
-                        <div class="text-[10px] text-gray-400 font-bold uppercase">Naha, Okinawa</div>
+                        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">那霸, 沖繩 · 晴時多雲</div>
                     </div>
                 </div>
-                <i data-lucide="external-link" class="w-4 h-4 text-gray-300"></i>
-            </div>
-
-            <div class="flex overflow-x-auto gap-3 pb-6">
-                <div v-for="date in dates" :key="date.full" @click="selectedDate = date.full" :class="['flex-shrink-0 w-16 h-20 rounded-2xl flex flex-col items-center justify-center transition-all bg-white shadow-sm', selectedDate === date.full ? 'bg-teal-600 text-white' : '']">
-                    <span class="text-[10px] font-bold">{{ date.weekday }}</span>
-                    <span class="text-2xl font-black">{{ date.day }}</span>
+                <div class="text-right flex flex-col items-end">
+                    <span class="bg-teal-100 text-teal-700 text-[10px] px-2 py-1 rounded-full font-bold">查看詳情</span>
                 </div>
             </div>
 
-            <draggable v-model="currentDayItems" item-key="id" handle=".drag-handle">
-                <template #item="{element, index}">
-                    <div>
-                        <div v-if="index > 0" class="flex items-center gap-4 py-2 ml-12">
-                            <i :data-lucide="element.transType === 'walk' ? 'walking' : 'car'" class="w-4 h-4 text-teal-300"></i>
-                            <div class="h-[1px] flex-1 border-t border-dashed border-teal-200"></div>
-                        </div>
-                        <div :class="element.type === '航班' ? 'bg-teal-700 text-white p-6' : 'bg-white p-5'" class="rounded-[30px] shadow-sm mb-2 relative flex gap-4">
-                            <div class="drag-handle opacity-20 flex items-center"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold uppercase tracking-tighter">{{ element.type }}</span>
-                                    <span class="text-[10px] font-bold opacity-50">{{ element.time }}</span>
-                                </div>
-                                <h3 class="font-black text-lg mt-1">{{ element.title }}</h3>
-                                <button v-if="element.type !== '航班'" @click="go(element.location)" class="w-full mt-3 bg-teal-500 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
-                                    <i data-lucide="navigation" class="w-3 h-3"></i> 導航
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-            </draggable>
-        </div>
-
-        <div v-if="currentTab === 'info'" class="space-y-4">
-            <div class="bg-white p-6 rounded-[35px] shadow-sm">
-                <h3 class="font-black text-gray-800 mb-4 flex items-center gap-2 text-sm"><i data-lucide="refresh-cw" class="text-teal-500 w-4 h-4"></i> 匯率 (1 JPY = 0.21 TWD)</h3>
-                <input v-model="exchange.jpy" type="number" class="w-full bg-gray-50 p-4 rounded-2xl text-xl font-black outline-none mb-4" placeholder="輸入日幣">
-                <div class="bg-teal-50 p-4 rounded-2xl flex justify-between items-center text-teal-700 font-black">
-                    <span>台幣約</span><span>NT$ {{ (exchange.jpy * 0.21).toFixed(0) }}</span>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <button @click="go('COT RENTACAR')" class="bg-white p-4 rounded-2xl font-black text-sm shadow-sm text-center">🚗 租車處</button>
-                <div class="bg-red-50 p-4 rounded-2xl font-black text-sm text-red-600 text-center">🚑 119/110</div>
-            </div>
-        </div>
-
-        <div v-if="currentTab === 'shopping'" class="grid grid-cols-2 gap-4">
-            <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-[30px] p-2 shadow-sm">
-                <div class="h-32 bg-gray-50 rounded-[25px] relative overflow-hidden">
-                    <img v-if="item.img" :src="item.img" class="w-full h-full object-cover">
-                    <div v-else class="w-full h-full flex items-center justify-center text-gray-200">
-                        <i data-lucide="camera" class="w-6 h-6"></i>
-                        <input type="file" @change="handleFileUpload($event, idx)" class="absolute inset-0 opacity-0" accept="image/*">
-                    </div>
-                </div>
-                <div class="p-2">
-                    <input v-model="item.name" class="edit-input text-xs" placeholder="商品名稱...">
-                    <input type="checkbox" v-model="item.bought" class="mt-2 accent-teal-600">
-                </div>
-            </div>
-            <button @click="addShoppingItem" class="h-48 border-2 border-dashed border-gray-200 rounded-[30px] flex items-center justify-center text-gray-300"><i data-lucide="plus" class="w-8 h-8"></i></button>
-        </div>
-
-        <div v-if="currentTab === 'expense'">
-            <div class="bg-teal-700 text-white p-8 rounded-[40px] mb-6 shadow-xl">
-                <div class="text-[10px] font-black opacity-60 uppercase">Total Spent</div>
-                <div class="text-4xl font-black">¥ {{ totalExpenses.toLocaleString() }}</div>
-                <div class="text-xs mt-2 bg-white/20 inline-block px-3 py-1 rounded-full">≈ NT$ {{ (totalExpenses * 0.21).toFixed(0) }}</div>
-            </div>
-            <div class="space-y-2">
-                <div v-for="(ex, idx) in expenses" :key="idx" class="bg-white p-4 rounded-[25px] flex justify-between items-center shadow-sm">
-                    <div class="flex-1">
-                        <input v-model="ex.name" class="edit-input text-sm text-gray-800" placeholder="名稱">
-                        <div class="text-[10px] text-gray-400 font-bold">{{ ex.date }} · {{ ex.pay }}</div>
-                    </div>
-                    <div class="flex items-center text-teal-600 font-black">
-                        <span class="text-xs mr-1">¥</span>
-                        <input v-model.number="ex.amount" type="number" class="edit-input text-right w-16">
-                    </div>
-                </div>
-            </div>
-            <button @click="addExpense" class="fixed bottom-10 right-8 w-14 h-14 bg-teal-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50"><i data-lucide="plus" class="w-6 h-6"></i></button>
-        </div>
-    </div>
-</div>
-
-<script>
-const { createApp, ref, computed, onMounted, nextTick } = Vue;
-createApp({
-    components: { draggable: window.vuedraggable },
-    setup() {
-        const bannerUrl = ref('Gemini_Generated_Image_rgp6cfrgp6cfrgp6.png');
-        const currentTab = ref('schedule');
-        const selectedDate = ref('2025-12-27');
-        const exchange = ref({ jpy: 0 });
-        const dates = [
-            { full: '2025-12-27', weekday: 'SAT', day: '27' },
-            { full: '2025-12-28', weekday: 'SUN', day: '28' },
-            { full: '2025-12-29', weekday: 'MON', day: '29' },
-            { full: '2025-12-30', weekday: 'TUE', day: '30' },
-            { full: '2025-12-31', weekday: 'WED', day: '31' }
-        ];
-        const scheduleItems = ref([
-            { id: 1, date: '2025-12-27', type: '航班', title: 'VZ568', from:'TPE', to:'OKA', time: '14:45-17:10', location: 'Naha Airport' },
-            { id: 2, date: '2025-12-27', type: '租車', title: '取車', time: '18:00', location: 'COT RENTACAR', transType: 'car' },
-            { id: 3, date: '2025-12-27', type: '景點', title: '美國村煙火', time: '20:00', location: 'American Village', transType: 'car' }
-        ]);
-        const shoppingList = ref([{ name: '紅芋塔', img: null, bought: false }]);
-        const expenses = ref([{ cat: '食', name: '晚餐', amount: 5000, date: '12/27', pay: '現金' }]);
-        const currentDayItems = computed({
-            get: () => scheduleItems.value.filter(i => i.date === selectedDate.value),
-            set: (val) => {
-                const other = scheduleItems.value.filter(i => i.date !== selectedDate.value);
-                scheduleItems.value = [...other, ...val];
-                nextTick(() => lucide.createIcons());
-            }
-        });
-        const totalExpenses = computed(() => expenses.value.reduce((sum, i) => sum + (Number(i.amount) || 0), 0));
-        const handleFileUpload = (event, index) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => { shoppingList.value[index].img = e.target.result; };
-                reader.readAsDataURL(file);
-            }
-        };
-        const openWeatherApp = () => {
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            window.location.href = isIOS ? "weather://" : "https://www.google.com/search?q=okinawa+weather";
-        };
-        const go = (loc) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank');
-        const tabClass = (t) => `p-3 rounded-full transition-all ${currentTab.value === t ? 'bg-white text-teal-600 shadow-xl' : 'text-white opacity-40'}`;
-        const addShoppingItem = () => shoppingList.value.push({ name: '', img: null, bought: false });
-        const addExpense = () => expenses.value.push({ name: '', amount: 0, date: '12/27', pay: '現金' });
-        onMounted(() => lucide.createIcons());
-        return { bannerUrl, currentTab, selectedDate, dates, scheduleItems, currentDayItems, shoppingList, expenses, totalExpenses, exchange, handleFileUpload, addShoppingItem, addExpense, go, tabClass, openWeatherApp };
-    }
-}).mount('#app');
-</script>
-</body>
-</html>
+            <div class="flex overflow-x-auto gap-3 pb-6 no-scrollbar">
+                <div v-for="date in
