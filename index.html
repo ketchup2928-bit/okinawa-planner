@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Okinawa 2025 | 沖繩跨年手冊</title>
+    <title>Okinawa 2025 | 跨年導航手冊</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,24 +12,24 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
         
-        /* 4. 背景顏色延伸自圖片底色 */
+        /* 4. 背景顏色延伸：與圖片底色一致 */
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #F4EBE2; color: #4A4A4A; overflow-x: hidden; }
         
-        /* 5. 頁首圓弧銜接：利用負邊距拉動重疊 */
+        /* 5. 圓弧銜接：負邊距將內容上拉重疊 */
         .content-layer { 
-            margin-top: -50px; 
-            border-radius: 45px 45px 0 0; 
+            margin-top: -60px; 
+            border-radius: 40px 40px 0 0; 
             background-color: #F4EBE2; 
             position: relative; 
             z-index: 20; 
             min-height: 100vh; 
             padding-bottom: 120px; 
-            box-shadow: 0 -15px 30px rgba(0,0,0,0.04);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
         }
         
-        .glass-nav { background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(12px); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.2); }
-        .date-item.active { background-color: #0D9488; color: white; transform: scale(1.08); box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.3); }
-        .flight-card { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white; border-radius: 2.5rem; padding: 1.5rem; }
+        .glass-nav { background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(15px); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .date-item.active { background-color: #0D9488; color: white; transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.3); }
+        .flight-card { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white; border-radius: 2rem; padding: 1.5rem; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         [v-cloak] { display: none; }
     </style>
@@ -38,8 +38,8 @@
 
 <div id="app" v-cloak>
     <header class="relative w-full h-[280px] overflow-hidden">
-        <img :src="bannerUrl" class="w-full h-full object-cover" alt="Okinawa">
-        <div class="absolute bottom-20 right-4 flex gap-1 glass-nav p-1 z-30">
+        <img :src="bannerUrl" class="w-full h-full object-cover" alt="Banner">
+        <div class="absolute bottom-24 right-4 flex gap-1 glass-nav p-1 z-30">
             <button @click="currentTab = 'schedule'" :class="tabClass('schedule')"><i data-lucide="map-pin" class="w-5 h-5"></i></button>
             <button @click="currentTab = 'info'" :class="tabClass('info')"><i data-lucide="info" class="w-5 h-5"></i></button>
             <button @click="currentTab = 'shopping'" :class="tabClass('shopping')"><i data-lucide="shopping-basket" class="w-5 h-5"></i></button>
@@ -50,12 +50,12 @@
     <div class="content-layer p-6">
         
         <div v-if="currentTab === 'schedule'">
-            <div @click="openWeather" class="flex items-center justify-between bg-white/60 p-4 rounded-[28px] mb-6 border border-white cursor-pointer active:scale-95 transition-all">
+            <div @click="openWeather" class="flex items-center justify-between bg-white/60 p-4 rounded-3xl mb-6 border border-white cursor-pointer active:scale-95 transition-all">
                 <div class="flex items-center gap-3">
                     <i data-lucide="cloud-sun" class="text-teal-500 w-9 h-9"></i>
                     <div>
-                        <div class="text-xl font-black text-teal-800">19°C · 那霸</div>
-                        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">點擊開啟即時氣象</div>
+                        <div class="text-lg font-black text-teal-800">Okinawa Weather</div>
+                        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">點擊開啟氣象預報</div>
                     </div>
                 </div>
                 <i data-lucide="chevron-right" class="w-4 h-4 text-teal-300"></i>
@@ -93,12 +93,12 @@
                             <div class="drag-handle cursor-grab opacity-20 flex items-center"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div>
                             <div class="flex-1">
                                 <div class="flex justify-between">
-                                    <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg uppercase tracking-tighter">{{ element.type }}</span>
+                                    <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg uppercase">{{ element.type }}</span>
                                     <span class="text-[10px] font-bold text-gray-300">{{ element.time }}</span>
                                 </div>
                                 <h3 class="font-black text-gray-800 text-lg mt-1 leading-tight">{{ element.title }}</h3>
-                                <button v-if="element.mapLink" @click="go(element.mapLink)" class="w-full mt-4 bg-teal-500 text-white py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 active:bg-teal-600 transition-colors">
-                                    <i data-lucide="navigation" class="w-4 h-4"></i> 開啟導航
+                                <button v-if="element.mapLink" @click="go(element.mapLink)" class="w-full mt-4 bg-teal-500 text-white py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 active:bg-teal-600">
+                                    <i data-lucide="navigation" class="w-4 h-4"></i> 導航
                                 </button>
                             </div>
                         </div>
@@ -109,12 +109,12 @@
 
         <div v-if="currentTab === 'info'" class="space-y-4">
             <div class="bg-white p-6 rounded-[35px] shadow-sm">
-                <h3 class="font-black text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="home" class="text-teal-500"></i> 住宿資訊</h3>
+                <h3 class="font-black text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="home" class="text-teal-500"></i> 住宿導航</h3>
                 <div v-for="hotel in hotels" :key="hotel.name" class="border-b border-gray-50 py-4 last:border-0">
                     <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ hotel.date }}</div>
                     <div class="text-gray-800 font-black text-lg mb-2">{{ hotel.name }}</div>
-                    <button @click="go(hotel.mapLink)" class="bg-gray-50 text-teal-600 text-xs font-bold py-2 px-4 rounded-xl border border-teal-50 flex items-center gap-2">
-                        <i data-lucide="map" class="w-4 h-4"></i> 查看地圖
+                    <button @click="go(hotel.mapLink)" class="bg-teal-50 text-teal-600 text-xs font-bold py-2 px-4 rounded-xl border border-teal-100 flex items-center gap-2">
+                        <i data-lucide="map" class="w-4 h-4"></i> 前往地圖
                     </button>
                 </div>
             </div>
@@ -122,14 +122,10 @@
             <div class="bg-white p-6 rounded-[35px] shadow-sm">
                 <h3 class="font-black text-gray-800 mb-2 flex items-center gap-2"><i data-lucide="car" class="text-teal-500"></i> 租車資訊</h3>
                 <div class="font-black text-lg">COT租車</div>
-                <button @click="go('https://maps.app.goo.gl/pUeCSLy2dK2t5ato9')" class="mt-2 bg-gray-50 text-teal-600 text-xs font-bold py-2 px-4 rounded-xl border border-teal-50 flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-4 h-4"></i> 前往取車點
+                <button @click="go('https://maps.app.goo.gl/pUeCSLy2dK2t5ato9')" class="mt-2 bg-teal-50 text-teal-600 text-xs font-bold py-2 px-4 rounded-xl border border-teal-100 flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i> 取車地點
                 </button>
             </div>
-            
-            <button @click="resetData" class="w-full py-4 text-red-300 text-[10px] font-bold border-2 border-dashed border-red-50 rounded-[30px] mt-10">
-                重置所有在地儲存資料 (清除存檔)
-            </button>
         </div>
 
         <div v-if="currentTab === 'shopping'" class="pb-20">
@@ -141,41 +137,33 @@
                             <i data-lucide="camera" class="w-8 h-8"></i>
                             <input type="file" @change="handleFileUpload($event, idx)" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
                         </div>
-                        <button v-if="item.img" @click="item.img = null" class="absolute top-2 right-2 bg-black/40 text-white p-1 rounded-full"><i data-lucide="x" class="w-3 h-3"></i></button>
                     </div>
                     <div class="p-4"><input v-model="item.name" class="w-full font-black text-sm border-none bg-transparent focus:ring-0 p-0" placeholder="品名..."></div>
                 </div>
-                <button @click="addShoppingItem" class="border-2 border-dashed border-gray-200 rounded-[32px] h-56 flex items-center justify-center text-gray-300 active:bg-gray-50">
-                    <i data-lucide="plus-circle" class="w-10 h-10"></i>
-                </button>
+                <button @click="addShoppingItem" class="border-2 border-dashed border-gray-200 rounded-[32px] h-56 flex items-center justify-center text-gray-300"><i data-lucide="plus-circle" class="w-10 h-10"></i></button>
             </div>
         </div>
 
         <div v-if="currentTab === 'expense'">
-            <div class="bg-teal-700 text-white p-8 rounded-[45px] mb-8 shadow-xl shadow-teal-900/20">
-                <div class="text-[10px] font-black opacity-60 uppercase tracking-widest">Total Spent (JPY)</div>
+            <div class="bg-teal-700 text-white p-8 rounded-[40px] mb-8 shadow-xl">
+                <div class="text-[10px] font-black opacity-60 uppercase tracking-widest">Total JPY</div>
                 <div class="text-5xl font-black mt-1">¥ {{ totalExpenses.toLocaleString() }}</div>
                 <div class="text-xs mt-4 bg-white/20 inline-block px-4 py-1.5 rounded-full font-bold">≈ NT$ {{ (totalExpenses * 0.21).toFixed(0) }}</div>
             </div>
             
             <div class="space-y-3 pb-24">
-                <div v-for="(ex, index) in expenses" :key="index" class="bg-white p-5 rounded-[28px] flex justify-between items-center shadow-sm border border-white">
-                    <div class="flex items-center gap-4 flex-1">
-                        <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center font-black text-xs">食</div>
-                        <div class="flex-1">
-                            <input v-model="ex.name" class="w-full border-none bg-transparent font-black text-gray-800 text-sm focus:ring-0 p-0" placeholder="點擊編輯品項...">
-                            <div class="text-[10px] text-gray-400 font-bold mt-1 uppercase">{{ selectedDate.slice(5) }} · CASH</div>
-                        </div>
+                <div v-for="(ex, index) in expenses" :key="index" class="bg-white p-5 rounded-[28px] flex justify-between items-center shadow-sm">
+                    <div class="flex-1">
+                        <input v-model="ex.name" class="w-full border-none bg-transparent font-black text-gray-800 text-sm focus:ring-0 p-0" placeholder="花費項目...">
+                        <div class="text-[10px] text-gray-400 font-bold mt-1 uppercase">{{ selectedDate.slice(5) }}</div>
                     </div>
-                    <div class="text-right">
-                        <div class="flex items-center justify-end text-teal-600 font-black">
-                            <span class="text-xs mr-1 font-bold">¥</span>
-                            <input v-model.number="ex.amount" type="number" class="w-20 text-right border-none bg-transparent focus:ring-0 p-0 font-black">
-                        </div>
-                        <button @click="expenses.splice(index, 1)" class="text-[10px] text-red-300 font-bold mt-1">刪除此筆</button>
+                    <div class="text-right flex items-center gap-2">
+                        <span class="text-xs font-bold text-teal-600">¥</span>
+                        <input v-model.number="ex.amount" type="number" class="w-20 text-right border-none bg-transparent focus:ring-0 p-0 font-black text-teal-600">
+                        <button @click="expenses.splice(index, 1)" class="text-red-300 ml-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 </div>
-                <button @click="addExpense" class="w-full py-5 border-2 border-dashed border-teal-100 rounded-[30px] text-teal-500 font-black text-sm active:bg-white transition-all">+ 新增一筆花費</button>
+                <button @click="addExpense" class="w-full py-5 border-2 border-dashed border-teal-100 rounded-[30px] text-teal-500 font-black text-sm">+ 新增一筆花費</button>
             </div>
         </div>
 
@@ -188,46 +176,46 @@ const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
 createApp({
     components: { draggable: window.vuedraggable },
     setup() {
-        // --- 預設行程資料 (依據你的需求填寫) ---
         const initialSchedule = [
             // 12/27
             { id: 1, date: '2025-12-27', type: '航班', title: '越捷 VZ568', from:'TPE', to:'OKA', time: '14:45-17:10', transType: 'none' },
-            { id: 2, date: '2025-12-27', type: '租車', title: 'COT租車 取車', time: '18:00', mapLink: 'https://maps.app.goo.gl/pUeCSLy2dK2t5ato9', transType: 'car' },
-            { id: 3, date: '2025-12-27', type: '行程', title: '美國村看煙火', time: '20:00', mapLink: '', transType: 'car' },
+            { id: 2, date: '2025-12-27', type: '行程', title: '20:00 美國村看煙火', time: '20:00', mapLink: 'https://maps.app.goo.gl/n8tPT6otof6LKoPg9', transType: 'car' },
             // 12/28
-            { id: 4, date: '2025-12-28', type: '美食', title: '珀塔瑪 北谷 美國村店', time: '08:00', mapLink: 'https://maps.app.goo.gl/gd9cGXM2uVPdrMyt6', transType: 'car' },
-            { id: 5, date: '2025-12-28', type: '景點', title: '真栄田岬駐車場', time: '12:00', mapLink: 'https://maps.app.goo.gl/nd3ekGETr74KvB5n8', transType: 'car' },
-            { id: 6, date: '2025-12-28', type: '購物', title: 'AEON MALL Rycom', time: '15:30', transType: 'car' },
-            { id: 7, date: '2025-12-28', type: '美食', title: '燒肉 琉球の牛 恩納店', time: '18:45', transType: 'car' },
+            { id: 3, date: '2025-12-28', type: '美食', title: '珀塔瑪 北谷 美國村店', time: '08:00', mapLink: 'https://maps.app.goo.gl/gd9cGXM2uVPdrMyt6', transType: 'car' },
+            { id: 4, date: '2025-12-28', type: '景點', title: '真栄田岬駐車場', time: '12:00', mapLink: 'https://maps.app.goo.gl/nd3ekGETr74KvB5n8', transType: 'car' },
+            { id: 5, date: '2025-12-28', type: '購物', title: 'AEON MALL Rycom', time: '15:30', mapLink: 'https://maps.app.goo.gl/UcojkZwhAEREZXf49', transType: 'car' },
+            { id: 6, date: '2025-12-28', type: '美食', title: '燒肉 琉球の牛 恩納店', time: '18:45', mapLink: 'https://maps.app.goo.gl/SSLz99nF92Aadaxr6', transType: 'car' },
             // 12/29
-            { id: 8, date: '2025-12-29', type: '景點', title: '美麗海水族館', time: '08:30', transType: 'car' },
-            { id: 9, date: '2025-12-29', type: '景點', title: '備瀬のフクギ並木', time: '10:30', transType: 'car' },
-            { id: 10, date: '2025-12-29', type: '美食', title: '漁師食堂 大ばんぶる舞 本部店', time: '11:00', mapLink: 'https://maps.google.com/?cid=5843075593640337030&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ', transType: 'car' },
-            { id: 11, date: '2025-12-29', type: '景點', title: '古宇利島', time: '13:30', transType: 'car' },
-            { id: 12, date: '2025-12-29', type: '美食', title: '大家阿古豬', time: '19:30', transType: 'car' },
+            { id: 7, date: '2025-12-29', type: '景點', title: '美麗海水族館', time: '08:30', mapLink: 'https://maps.app.goo.gl/spgMqx7f3skNuP93A', transType: 'car' },
+            { id: 8, date: '2025-12-29', type: '景點', title: '備瀬のフクギ並木', time: '10:30', mapLink: 'https://maps.app.goo.gl/UsSjNnTVxsx5eYjh8', transType: 'car' },
+            { id: 9, date: '2025-12-29', type: '美食', title: '漁師食堂 大ばんぶる舞', time: '11:00', mapLink: 'https://maps.app.goo.gl/QwnXfRSR6Ko5gmgZ6', transType: 'car' },
+            { id: 10, date: '2025-12-29', type: '景點', title: '古宇利島', time: '13:30', mapLink: 'https://maps.app.goo.gl/vLW4Y99Sb6NLd5Hk7', transType: 'car' },
+            { id: 11, date: '2025-12-29', type: '美食', title: '大家阿古豬', time: '19:30', mapLink: 'https://maps.app.goo.gl/L3FWhnzYVbwNfTqo6', transType: 'car' },
             // 12/30
-            { id: 13, date: '2025-12-30', type: '景點', title: '部瀨名海中公園', time: 'AM', transType: 'car' },
-            { id: 14, date: '2025-12-30', type: '景點', title: '玉泉洞', time: 'PM', transType: 'car' },
-            { id: 15, date: '2025-12-30', type: '景點', title: '瀨長島', time: 'PM', transType: 'car' },
-            { id: 16, date: '2025-12-30', type: '租車', title: '還車 (COT)', time: '18:00', mapLink: 'https://maps.app.goo.gl/pUeCSLy2dK2t5ato9', transType: 'car' },
-            { id: 17, date: '2025-12-30', type: '美食', title: '傑克牛排館', time: 'Night', transType: 'walk' },
+            { id: 12, date: '2025-12-30', type: '景點', title: '部瀨名海中公園', time: 'AM', mapLink: 'https://maps.app.goo.gl/JeL4iyvxKgiyD2N69', transType: 'car' },
+            { id: 13, date: '2025-12-30', type: '景點', title: '玉泉洞', time: 'PM', mapLink: 'https://maps.app.goo.gl/UAK1Q7n9uwkqGKSw9', transType: 'car' },
+            { id: 14, date: '2025-12-30', type: '景點', title: '瀨長島', time: 'PM', mapLink: 'https://maps.app.goo.gl/D3pRveoV2gqCxmAa7', transType: 'car' },
+            { id: 15, date: '2025-12-30', type: '行程', title: '18:00 還車 / 傑克牛排館', time: '18:00', mapLink: 'https://maps.app.goo.gl/YocVnipWRn3N6P6Q8', transType: 'walk' },
             // 12/31
-            { id: 18, date: '2025-12-31', type: '景點', title: '波上宮', time: '09:00', transType: 'walk' },
-            { id: 19, date: '2025-12-31', type: '購物', title: '國際通 / 牧志市場', time: '11:00', transType: 'walk' },
-            { id: 20, date: '2025-12-31', type: '航班', title: '越捷 VZ569', from:'OKA', to:'TPE', time: '18:10-18:50', transType: 'none' }
+            { id: 16, date: '2025-12-31', type: '景點', title: '波上宮', time: '09:00', mapLink: 'https://maps.app.goo.gl/CyY1G8CVUEQ2tNYU8', transType: 'walk' },
+            { id: 17, date: '2025-12-31', type: '購物', title: '國際通 / 牧志市場', time: '11:00', mapLink: 'https://maps.app.goo.gl/KcesG85ZMAuag6SAA', transType: 'walk' },
+            { id: 18, date: '2025-12-31', type: '航班', title: '越捷 VZ569', from:'OKA', to:'TPE', time: '18:10-18:50', transType: 'none' }
         ];
 
-        // --- 狀態管理 ---
         const bannerUrl = ref('Gemini_Generated_Image_rgp6cfrgp6cfrgp6.png');
         const currentTab = ref('schedule');
         const selectedDate = ref('2025-12-27');
-        
-        // --- localStorage 讀取與自動存檔 ---
-        const getStored = (key, def) => JSON.parse(localStorage.getItem(key)) || def;
-        
-        const scheduleItems = ref(getStored('okinawa_sch_final', initialSchedule));
-        const expenses = ref(getStored('okinawa_exp_final', []));
-        const shoppingList = ref(getStored('okinawa_shop_final', []));
+        const getStored = (k, d) => JSON.parse(localStorage.getItem(k)) || d;
+
+        const scheduleItems = ref(getStored('ok_sch_v2', initialSchedule));
+        const expenses = ref(getStored('ok_exp_v2', []));
+        const shoppingList = ref(getStored('ok_shop_v2', []));
+
+        watch([scheduleItems, expenses, shoppingList], () => {
+            localStorage.setItem('ok_sch_v2', JSON.stringify(scheduleItems.value));
+            localStorage.setItem('ok_exp_v2', JSON.stringify(expenses.value));
+            localStorage.setItem('ok_shop_v2', JSON.stringify(shoppingList.value));
+        }, { deep: true });
 
         const dates = [
             { full: '2025-12-27', weekday: 'SAT', day: '27' },
@@ -239,61 +227,42 @@ createApp({
 
         const hotels = [
             { date: '12/27', name: 'Mr. Kinjo in Alaha Style', mapLink: 'https://maps.app.goo.gl/9xhmpHF2cq8PXf8x8' },
-            { date: '12/28 & 12/29', name: 'グリーンリッチホテル沖縄名護', mapLink: 'https://maps.app.goo.gl/ifJ2Covv9GeCdajq6' },
+            { date: '12/28-29', name: 'グリーンリッチホテル沖縄名護', mapLink: 'https://maps.app.goo.gl/ifJ2Covv9GeCdajq6' },
             { date: '12/30', name: 'Mr.KINJO Miki24 in 牧志駅前', mapLink: 'https://maps.app.goo.gl/B3mD5pX5JnhWo13U8' }
         ];
-
-        // 深度監聽並自動存檔
-        watch([scheduleItems, expenses, shoppingList], () => {
-            localStorage.setItem('okinawa_sch_final', JSON.stringify(scheduleItems.value));
-            localStorage.setItem('okinawa_exp_final', JSON.stringify(expenses.value));
-            localStorage.setItem('okinawa_shop_final', JSON.stringify(shoppingList.value));
-        }, { deep: true });
 
         const currentDayItems = computed({
             get: () => scheduleItems.value.filter(i => i.date === selectedDate.value),
             set: (val) => {
-                const otherDays = scheduleItems.value.filter(i => i.date !== selectedDate.value);
-                scheduleItems.value = [...otherDays, ...val];
+                const others = scheduleItems.value.filter(i => i.date !== selectedDate.value);
+                scheduleItems.value = [...others, ...val];
                 nextTick(() => lucide.createIcons());
             }
         });
 
-        const totalExpenses = computed(() => expenses.value.reduce((sum, i) => sum + (Number(i.amount) || 0), 0));
-
-        // 方法
+        const totalExpenses = computed(() => expenses.value.reduce((s, i) => s + (Number(i.amount) || 0), 0));
         const openWeather = () => {
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            window.location.href = isIOS ? "weather://" : "https://www.google.com/search?q=okinawa+weather";
+            const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            window.location.href = ios ? "weather://" : "https://www.google.com/search?q=okinawa+weather";
         };
-
-        const go = (url) => { if(url) window.open(url, '_blank'); };
+        const go = (u) => window.open(u, '_blank');
         const addExpense = () => { expenses.value.push({ name: '', amount: 0 }); nextTick(() => lucide.createIcons()); };
         const addShoppingItem = () => shoppingList.value.push({ name: '', img: null });
-        
         const handleFileUpload = (e, i) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (res) => { shoppingList.value[i].img = res.target.result; };
-                reader.readAsDataURL(file);
+            const f = e.target.files[0];
+            if (f) {
+                const r = new FileReader();
+                r.onload = (res) => { shoppingList.value[i].img = res.target.result; };
+                r.readAsDataURL(f);
             }
         };
-
-        const resetData = () => {
-            if(confirm("確定要刪除所有自訂行程、照片與花費記錄嗎？此動作無法復原。")) {
-                localStorage.clear();
-                location.reload();
-            }
-        };
-
-        const tabClass = (tab) => `p-3 rounded-full transition-all ${currentTab.value === tab ? 'bg-white text-teal-600 shadow-lg' : 'text-white opacity-40'}`;
+        const tabClass = (t) => `p-3 rounded-full transition-all ${currentTab.value === t ? 'bg-white text-teal-600' : 'text-white opacity-40'}`;
 
         onMounted(() => lucide.createIcons());
 
         return {
             bannerUrl, currentTab, selectedDate, dates, scheduleItems, currentDayItems, hotels,
-            shoppingList, expenses, totalExpenses, handleFileUpload, addShoppingItem, go, tabClass, openWeather, addExpense, resetData
+            shoppingList, expenses, totalExpenses, handleFileUpload, addShoppingItem, go, tabClass, openWeather, addExpense
         };
     }
 }).mount('#app');
