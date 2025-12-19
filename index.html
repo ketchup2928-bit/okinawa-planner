@@ -107,4 +107,162 @@
                 <h3 class="font-black text-sm mb-4">🚗 租車與緊急資訊</h3>
                 <div class="grid grid-cols-2 gap-3">
                     <button @click="go('COT RENTACAR')" class="bg-gray-50 p-4 rounded-2xl text-left"><div class="text-[10px] font-bold text-gray-400">租車處</div><div class="font-black text-sm">COT租車</div></button>
-                    <button class="bg-red-50 p-4 rounded-2xl text-left"><div class="text-[10px] font-bold text-red-
+                    <button class="bg-red-50 p-4 rounded-2xl text-left"><div class="text-[10px] font-bold text-red-300">緊急電話</div><div class="font-black text-sm text-red-600">110 / 119</div></button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'shopping'" class="pb-20">
+            <div class="grid grid-cols-2 gap-4">
+                <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-[30px] overflow-hidden shadow-sm border border-white p-2">
+                    <div class="h-36 bg-gray-50 rounded-[25px] relative overflow-hidden group">
+                        <img v-if="item.img" :src="item.img" class="w-full h-full object-cover">
+                        <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-200">
+                            <i data-lucide="camera" class="w-8 h-8"></i>
+                            <input type="file" @change="handleFileUpload($event, idx)" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <input v-model="item.name" class="edit-input text-sm text-gray-700" placeholder="輸入商品名稱...">
+                        <label class="flex items-center gap-2 mt-3 cursor-pointer">
+                            <input type="checkbox" v-model="item.bought" class="w-4 h-4 rounded-full text-teal-600 border-gray-200 focus:ring-0">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Got it</span>
+                        </label>
+                    </div>
+                </div>
+                <button @click="addShoppingItem" class="h-56 border-2 border-dashed border-gray-200 rounded-[30px] flex items-center justify-center text-gray-300 active:bg-white transition-colors">
+                    <i data-lucide="plus" class="w-8 h-8"></i>
+                </button>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'expense'">
+            <div class="bg-teal-700 text-white p-8 rounded-[40px] mb-6 shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="text-[10px] font-black opacity-60 uppercase tracking-[0.2em]">Total Expenses</div>
+                    <div class="text-4xl font-black mt-1 tracking-tighter">¥ {{ totalExpenses.toLocaleString() }}</div>
+                    <div class="text-xs mt-3 bg-white/20 inline-block px-4 py-1.5 rounded-full font-bold">≈ NT$ {{ (totalExpenses * 0.21).toLocaleString() }}</div>
+                </div>
+                <i data-lucide="wallet" class="absolute right-[-10px] bottom-[-10px] w-32 h-32 opacity-10"></i>
+            </div>
+            
+            <div class="space-y-3">
+                <div v-for="(ex, idx) in expenses" :key="idx" class="bg-white p-5 rounded-[28px] shadow-sm border border-white">
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center">
+                            <select v-model="ex.cat" class="bg-transparent font-black text-xs outline-none appearance-none text-center">
+                                <option>食</option><option>車</option><option>住</option><option>玩</option><option>購</option><option>他</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <input v-model="ex.name" class="edit-input text-gray-800 text-sm" placeholder="費用名稱...">
+                                <div class="flex items-center text-teal-600 font-black">
+                                    <span class="text-xs mr-1">¥</span>
+                                    <input v-model.number="ex.amount" type="number" class="edit-input text-right w-20" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="flex justify-between mt-2">
+                                <input v-model="ex.date" type="text" class="text-[10px] text-gray-400 font-bold bg-transparent border-none outline-none w-20" placeholder="日期">
+                                <select v-model="ex.pay" class="text-[10px] text-teal-400 font-bold bg-transparent outline-none">
+                                    <option>現金</option><option>信用卡</option><option>LinePay</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button @click="addExpense" class="fixed bottom-10 right-8 w-16 h-16 bg-teal-600 text-white rounded-full shadow-2xl flex items-center justify-center animate-bounce z-50">
+                <i data-lucide="plus" class="w-8 h-8"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const { createApp, ref, computed, onMounted, nextTick } = Vue;
+
+createApp({
+    components: { draggable: window.vuedraggable },
+    setup() {
+        const bannerUrl = ref('Gemini_Generated_Image_rgp6cfrgp6cfrgp6.png');
+        const currentTab = ref('schedule');
+        const selectedDate = ref('2025-12-27');
+        const exchange = ref({ jpy: 0 });
+
+        const dates = [
+            { full: '2025-12-27', weekday: 'SAT', day: '27' },
+            { full: '2025-12-28', weekday: 'SUN', day: '28' },
+            { full: '2025-12-29', weekday: 'MON', day: '29' },
+            { full: '2025-12-30', weekday: 'TUE', day: '30' },
+            { full: '2025-12-31', weekday: 'WED', day: '31' }
+        ];
+
+        const scheduleItems = ref([
+            { id: 101, date: '2025-12-27', type: '航班', title: '越捷 VZ568', from:'TPE', to:'OKA', time: '14:45-17:10', location: 'Naha Airport', transType: 'none' },
+            { id: 102, date: '2025-12-27', type: '租車', title: 'COT租車 取車', time: '18:00', location: 'COT RENTACAR', transType: 'car' },
+            { id: 103, date: '2025-12-27', type: '景點', title: '美國村看煙火', time: '20:00', location: 'American Village', transType: 'car' },
+            { id: 201, date: '2025-12-28', type: '美食', title: '珀塔瑪 飯糰', time: '08:00', location: 'Pork Tamago Onigiri Chatan', transType: 'car' },
+            { id: 204, date: '2025-12-28', type: '美食', title: '燒肉 琉球之牛', time: '18:45', location: 'Ryukyu no Ushi Enna', transType: 'car' },
+            { id: 301, date: '2025-12-29', type: '景點', title: '美麗海水族館', time: '08:30', location: 'Churaumi Aquarium', transType: 'car' },
+            { id: 401, date: '2025-12-30', type: '景點', title: '部瀨名海中公園', time: '09:00', location: 'Busena Marine Park', transType: 'car' },
+            { id: 501, date: '2025-12-31', type: '景點', title: '波上宮', time: '09:00', location: 'Naminoue Shrine', transType: 'walk' },
+            { id: 503, date: '2025-12-31', type: '航班', title: '越捷 VZ569', from:'OKA', to:'TPE', time: '18:10-18:50', location: 'Naha Airport', transType: 'none' }
+        ]);
+
+        const shoppingList = ref([
+            { name: '雪鹽金楚糕', img: null, bought: false },
+            { name: 'Orion 啤酒杯', img: null, bought: false }
+        ]);
+
+        const expenses = ref([
+            { cat: '食', name: '燒肉晚餐', amount: 15000, date: '2025-12-28', pay: '信用卡' },
+            { cat: '車', name: '租車尾款', amount: 28000, date: '2025-12-27', pay: '現金' }
+        ]);
+
+        const currentDayItems = computed({
+            get: () => scheduleItems.value.filter(i => i.date === selectedDate.value),
+            set: (val) => {
+                const otherDays = scheduleItems.value.filter(i => i.date !== selectedDate.value);
+                scheduleItems.value = [...otherDays, ...val];
+                nextTick(() => lucide.createIcons());
+            }
+        });
+
+        const totalExpenses = computed(() => expenses.value.reduce((sum, i) => sum + (Number(i.amount) || 0), 0));
+
+        const handleFileUpload = (event, index) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { shoppingList.value[index].img = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        const addShoppingItem = () => shoppingList.value.push({ name: '', img: null, bought: false });
+        const addExpense = () => expenses.value.push({ cat: '食', name: '', amount: 0, date: '2025-12-27', pay: '現金' });
+        
+        const openWeatherApp = () => {
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isIOS) {
+                window.location.href = "weather://";
+            } else {
+                window.open("https://www.google.com/search?q=okinawa+weather", "_blank");
+            }
+        };
+
+        const go = (loc) => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank');
+        const tabClass = (tab) => `p-3 rounded-full transition-all ${currentTab.value === tab ? 'bg-white text-teal-600 shadow-xl scale-110' : 'text-white opacity-40'}`;
+
+        onMounted(() => lucide.createIcons());
+
+        return {
+            bannerUrl, currentTab, selectedDate, dates, scheduleItems, currentDayItems,
+            shoppingList, expenses, totalExpenses, exchange, handleFileUpload, addShoppingItem, addExpense, go, tabClass, openWeatherApp
+        };
+    }
+}).mount('#app');
+</script>
+</body>
+</html>
